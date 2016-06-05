@@ -90,7 +90,7 @@ public class FatesealEffect extends OneShotEffect {
                 target1.setRequired(false);
                 // move cards to the bottom of the library
                 while (cards.size() > 0 && controller.choose(Outcome.Detriment, cards, target1, game)) {
-                    if (!controller.canRespond() || !opponent.canRespond()) {
+                    if (!controller.canRespond(game) || !opponent.canRespond(game)) {
                         return false;
                     }
                     Card card = cards.get(target1.getFirstTarget(), game);

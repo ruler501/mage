@@ -98,20 +98,20 @@ class GameOfChaosEffect extends OneShotEffect {
                 if (youWinFlip) { // flipper of coin wins, flipper gain 1 and non-flipper loses 1
                     you.gainLife(lifeAmount, game);
                     targetOpponent.loseLife(lifeAmount, game);
-                    if (targetOpponent.canRespond() && you.canRespond()) {
+                    if (targetOpponent.canRespond(game) && you.canRespond(game)) {
                         continueFlipping = you.chooseUse(outcome, "Flip again?", source, game);
                         controllerWonLast = true;
                     }
                 } else { // non-flipper wins, flipper lose 1 and non-flipper gains 1
                     you.loseLife(lifeAmount, game);
                     targetOpponent.gainLife(lifeAmount, game);
-                    if (targetOpponent.canRespond() && you.canRespond()) {
+                    if (targetOpponent.canRespond(game) && you.canRespond(game)) {
                         continueFlipping = targetOpponent.chooseUse(outcome, "Flip again?", source, game);
                         controllerWonLast = false;
                     }
                 }
                 
-                if (!targetOpponent.canRespond() && !you.canRespond()) {
+                if (!targetOpponent.canRespond(game) && !you.canRespond(game)) {
                     continueFlipping = false;
                 }
                 

@@ -98,7 +98,7 @@ class WordsOfWindEffect extends ReplacementEffectImpl {
                 List<Permanent> liste = game.getBattlefield().getActivePermanents(new FilterControlledPermanent(), playerId, game);
                 if(!liste.isEmpty()){
                     while (!player.choose(Outcome.ReturnToHand, target, source.getSourceId(), game)){
-                        if (!player.canRespond()) {
+                        if (!player.canRespond(game)) {
                             return false;
                         }
                     }

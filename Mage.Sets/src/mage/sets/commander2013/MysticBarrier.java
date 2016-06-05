@@ -146,7 +146,7 @@ class MysticBarrierChooseEffect extends OneShotEffect {
         Player controller = game.getPlayer(source.getControllerId());
         if (controller != null) {
             DIRECTION_CHOICE.clearChoice();
-            while (!DIRECTION_CHOICE.isChosen() && controller.canRespond()) {
+            while (!DIRECTION_CHOICE.isChosen() && controller.canRespond(game)) {
                 controller.choose(outcome, DIRECTION_CHOICE, game);
             }
             if (!DIRECTION_CHOICE.getChoice().isEmpty()) {

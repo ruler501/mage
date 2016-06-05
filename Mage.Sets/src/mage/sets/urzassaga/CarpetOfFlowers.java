@@ -158,7 +158,7 @@ class CarpetOfFlowersEffect extends ManaEffect {
             ChoiceColor choice = new ChoiceColor();
             while (!choice.isChosen()) {
                 controller.choose(Outcome.Benefit, choice, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

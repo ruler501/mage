@@ -133,7 +133,7 @@ class TalentOfTheTelepathEffect extends OneShotEffect {
                             cardsToCast.remove(card);
                             allCards.remove(card);
                         }
-                        if (!controller.canRespond()) {
+                        if (!controller.canRespond(game)) {
                             return false;
                         }
                         target.clearChosen();

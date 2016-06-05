@@ -101,7 +101,7 @@ class SlaughterGamesEffect extends SearchTargetGraveyardHandLibraryForCardNameAn
             cardChoice.setMessage("Name a nonland card");
 
             while (!controller.choose(Outcome.Exile, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

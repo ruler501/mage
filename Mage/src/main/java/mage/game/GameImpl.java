@@ -586,26 +586,28 @@ public abstract class GameImpl implements Game, Serializable {
         if (state.isGameOver()) {
             return true;
         }
-        int remainingPlayers = 0;
+        Set<Player> remainingPlayers = new HashSet<>();
         int numLosers = 0;
         for (Player player : state.getPlayers().values()) {
-            if (!player.hasLeft()) {
-                remainingPlayers++;
-            }
-            if (player.hasLost()) {
+            if(player.hasLeft() || player.hasLost(this)) {
                 numLosers++;
             }
+            else{
+                remainingPlayers.add(player);
+            }
         }
-        if (remainingPlayers <= 1 || numLosers >= state.getPlayers().size() - 1) {
+        if (remainingPlayers.size() == 0 
+                || remainingPlayers.size() <= remainingPlayers.iterator().next().getTeammates().size() + 1
+                || numLosers >= state.getPlayers().size() - remainingPlayers.iterator().next().getTeammates().size() - 1) {
             end();
-            if (remainingPlayers == 0 && logger.isDebugEnabled()) {
+            if (remainingPlayers.size() == 0 && logger.isDebugEnabled()) {
                 logger.debug("DRAW for gameId: " + getId());
                 for (Player player : state.getPlayers().values()) {
-                    logger.debug("-- " + player.getName() + " left: " + (player.hasLeft() ? "Y" : "N") + " lost: " + (player.hasLost() ? "Y" : "N"));
+                    logger.debug("-- " + player.getName() + " left: " + (player.hasLeft() ? "Y" : "N") + " lost: " + (player.hasLost(this) ? "Y" : "N"));
                 }
             }
             for (Player player : state.getPlayers().values()) {
-                if (!player.hasLeft() && !player.hasLost()) {
+                if (!player.hasLeft() && !player.hasLost(this)) {
                     logger.debug(new StringBuilder("Player ").append(player.getName()).append(" has won gameId: ").append(this.getId()));
                     player.won(this);
                 }
@@ -763,8 +765,8 @@ public abstract class GameImpl implements Game, Serializable {
                     sb.append(" - ");
                 }
                 sb.append("[").append(player.getName()).append(" => ");
-                sb.append(player.hasWon() ? "W" : "");
-                sb.append(player.hasLost() ? "L" : "");
+                sb.append(player.hasWon(this) ? "W" : "");
+                sb.append(player.hasLost(this) ? "L" : "");
                 sb.append(player.hasQuit() ? "Q" : "");
                 sb.append(player.hasIdleTimeout() ? "I" : "");
                 sb.append(player.hasTimerTimeout() ? "T" : "");
@@ -782,7 +784,7 @@ public abstract class GameImpl implements Game, Serializable {
             GameEvent event = new GameEvent(GameEvent.EventType.PLAY_TURN, null, null, extraTurn.getPlayerId());
             if (!replaceEvent(event)) {
                 Player extraPlayer = this.getPlayer(extraTurn.getPlayerId());
-                if (extraPlayer != null && extraPlayer.canRespond()) {
+                if (extraPlayer != null && extraPlayer.canRespond(this)) {
                     state.setExtraTurn(true);
                     state.setTurnId(extraTurn.getId());
                     if (!this.isSimulation()) {
@@ -821,7 +823,7 @@ public abstract class GameImpl implements Game, Serializable {
                 executingRollback = false;
                 player = getPlayer(state.getActivePlayerId());
                 for (Player playerObject : getPlayers().values()) {
-                    if (playerObject.isInGame()) {
+                    if (playerObject.isInGame(this)) {
                         playerObject.abortReset();
                     }
                 }
@@ -890,7 +892,7 @@ public abstract class GameImpl implements Game, Serializable {
         Player choosingPlayer = null;
         if (choosingPlayerId != null) {
             choosingPlayer = this.getPlayer(choosingPlayerId);
-            if (choosingPlayer != null && !choosingPlayer.isInGame()) {
+            if (choosingPlayer != null && !choosingPlayer.isInGame(this)) {
                 choosingPlayer = null;
             }
         }
@@ -914,7 +916,7 @@ public abstract class GameImpl implements Game, Serializable {
         if (startingPlayerId == null) {
             // choose any available player as starting player
             for (Player player : state.getPlayers().values()) {
-                if (player.isInGame()) {
+                if (player.isInGame(this)) {
                     startingPlayerId = player.getId();
                     break;
                 }
@@ -1049,12 +1051,12 @@ public abstract class GameImpl implements Game, Serializable {
     protected UUID findWinnersAndLosers() {
         UUID winnerIdFound = null;
         for (Player player : state.getPlayers().values()) {
-            if (player.hasWon()) {
+            if (player.hasWon(this)) {
                 logger.debug(player.getName() + " has won gameId: " + getId());
                 winnerIdFound = player.getId();
                 break;
             }
-            if (!player.hasLost() && !player.hasLeft()) {
+            if (!player.hasLost(this) && !player.hasLeft()) {
                 logger.debug(player.getName() + " has not lost so he won gameId: " + this.getId());
                 player.won(this);
                 winnerIdFound = player.getId();
@@ -1062,7 +1064,7 @@ public abstract class GameImpl implements Game, Serializable {
             }
         }
         for (Player player : state.getPlayers().values()) {
-            if (winnerIdFound != null && !player.getId().equals(winnerIdFound) && !player.hasLost()) {
+            if (winnerIdFound != null && !player.getId().equals(winnerIdFound) && !player.hasLost(this)) {
                 player.lost(this);
             }
         }
@@ -1082,7 +1084,7 @@ public abstract class GameImpl implements Game, Serializable {
         while (!hasEnded()) {
             playerId = players[rnd.nextInt(players.length)];
             Player player = getPlayer(playerId);
-            if (player != null && player.isInGame()) {
+            if (player != null && player.isInGame(this)) {
                 fireInformEvent(state.getPlayer(playerId).getLogName() + " won the toss");
                 return player.getId();
             }
@@ -1190,7 +1192,7 @@ public abstract class GameImpl implements Game, Serializable {
     @Override
     public synchronized void concede(UUID playerId) {
         Player player = state.getPlayer(playerId);
-        if (player != null && !player.hasLost()) {
+        if (player != null && !player.hasLost(this)) {
             logger.debug("Player " + player.getName() + " concedes game " + this.getId());
             fireInformEvent(player.getLogName() + " has conceded.");
             player.concede(this);
@@ -1267,7 +1269,7 @@ public abstract class GameImpl implements Game, Serializable {
                         }
                         player = getPlayer(state.getPlayerList().get());
                         state.setPriorityPlayerId(player.getId());
-                        while (!player.isPassed() && player.canRespond() && !isPaused() && !gameOver(null)) {
+                        while (!player.isPassed() && player.canRespond(this) && !isPaused() && !gameOver(null)) {
                             if (!resuming) {
                                 // 603.3. Once an ability has triggered, its controller puts it on the stack as an object thats not a card the next time a player would receive priority
                                 checkStateAndTriggered();
@@ -1366,7 +1368,7 @@ public abstract class GameImpl implements Game, Serializable {
 
     protected boolean allPassed() {
         for (Player player : state.getPlayers().values()) {
-            if (!player.isPassed() && player.canRespond()) {
+            if (!player.isPassed() && player.canRespond(this)) {
                 return false;
             }
         }
@@ -1565,7 +1567,7 @@ public abstract class GameImpl implements Game, Serializable {
         state.getTriggers().checkStateTriggers(this);
         for (UUID playerId : state.getPlayerList(state.getActivePlayerId())) {
             Player player = getPlayer(playerId);
-            while (player.isInGame()) { // player can die or win caused by triggered abilities or leave the game
+            while (player.isInGame(this)) { // player can die or win caused by triggered abilities or leave the game
                 List<TriggeredAbility> abilities = state.getTriggered(player.getId());
                 if (abilities.isEmpty()) {
                     break;
@@ -1613,7 +1615,7 @@ public abstract class GameImpl implements Game, Serializable {
 
         //20091005 - 704.5a/704.5b/704.5c
         for (Player player : state.getPlayers().values()) {
-            if (!player.hasLost()
+            if (!player.hasLost(this)
                     && ((player.getLife() <= 0 && player.canLoseByZeroOrLessLife())
                     || player.isEmptyDraw()
                     || player.getCounters().getCount(CounterType.POISON) >= 10)) {
@@ -2783,7 +2785,7 @@ public abstract class GameImpl implements Game, Serializable {
                     gameStatesRollBack.put(getTurnNum(), state.copy());
                     executingRollback = true;
                     for (Player playerObject : getPlayers().values()) {
-                        if (playerObject.isHuman() && playerObject.isInGame()) {
+                        if (playerObject.isHuman() && playerObject.isInGame(this)) {
                             playerObject.abort();
                             playerObject.resetPlayerPassedActions();
                         }

@@ -81,7 +81,7 @@ public class GainProtectionFromColorAllEffect extends GainAbilityAllEffect {
             choice.clearChoice();
             while (!choice.isChosen()) {
                 controller.choose(Outcome.Protect, choice, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return;
                 }
             }

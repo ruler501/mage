@@ -88,7 +88,7 @@ class ExtinctionEffect extends OneShotEffect {
             typeChoice.setMessage("Choose a creature type:");
             typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
             while (!player.choose(outcome, typeChoice, game)) {
-                if (!player.canRespond()) {
+                if (!player.canRespond(game)) {
                     return false;
                 }
             }

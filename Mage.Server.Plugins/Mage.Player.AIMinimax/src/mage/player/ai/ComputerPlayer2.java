@@ -466,7 +466,7 @@ public class ComputerPlayer2 extends ComputerPlayer implements Player {
 
     protected boolean allPassed(Game game) {
         for (Player player: game.getPlayers().values()) {
-            if (!player.isPassed() && !player.hasLost() && !player.hasLeft())
+            if (!player.isPassed() && !player.hasLost(game) && !player.hasLeft())
                 return false;
         }
         return true;

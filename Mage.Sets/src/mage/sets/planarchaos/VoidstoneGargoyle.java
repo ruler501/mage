@@ -107,7 +107,7 @@ class VoidstoneGargoyleChooseCardEffect extends OneShotEffect {
             cardChoice.setChoices(CardRepository.instance.getNonLandNames());
             cardChoice.clearChoice();
             while (!controller.choose(Outcome.Detriment, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

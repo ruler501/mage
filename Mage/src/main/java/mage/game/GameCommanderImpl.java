@@ -196,7 +196,7 @@ public abstract class GameCommanderImpl extends GameImpl {
             for (Map.Entry<UUID, Integer> entrySet : damageWatcher.getDamageToPlayer().entrySet()) {
                 if (entrySet.getValue() > 20) {
                     Player opponent = getPlayer(entrySet.getKey());
-                    if (opponent != null && !opponent.hasLost() && player.isInGame()) {
+                    if (opponent != null && !opponent.hasLost(this) && player.isInGame(this)) {
                         opponent.lost(this);
                     }
                 }
@@ -210,7 +210,9 @@ public abstract class GameCommanderImpl extends GameImpl {
         Set<UUID> opponents = new HashSet<>();
         for (UUID opponentId : getState().getPlayersInRange(playerId, this)) {
             if (!opponentId.equals(playerId)) {
-                opponents.add(opponentId);
+                if(!this.getPlayer(playerId).isTeammate(opponentId)){
+                    opponents.add(opponentId);
+                }
             }
         }
         return opponents;
@@ -218,7 +220,7 @@ public abstract class GameCommanderImpl extends GameImpl {
 
     @Override
     public boolean isOpponent(Player player, UUID playerToCheck) {
-        return !player.getId().equals(playerToCheck);
+        return !player.getId().equals(playerToCheck) && !player.isTeammate(playerToCheck);
     }
 
     public void setAlsoHand(boolean alsoHand) {

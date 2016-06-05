@@ -119,7 +119,7 @@ class CascadeEffect extends OneShotEffect {
                 break;
             }
             player.moveCardsToExile(card, source, game, true, exile.getId(), exile.getName());
-        } while (player.isInGame() && card.getCardType().contains(CardType.LAND) || card.getConvertedManaCost() >= sourceCost);
+        } while (player.isInGame(game) && card.getCardType().contains(CardType.LAND) || card.getConvertedManaCost() >= sourceCost);
         player.getLibrary().reset();
 
         if (card != null) {

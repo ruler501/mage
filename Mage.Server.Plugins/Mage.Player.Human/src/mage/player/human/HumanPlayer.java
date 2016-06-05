@@ -658,7 +658,7 @@ public class HumanPlayer extends PlayerImpl {
                     passedUntilStackResolved = false;
                 }
             }
-            while (canRespond()) {
+            while (canRespond(game)) {
                 updateGameStatePriority("priority", game);
                 game.firePriorityEvent(playerId);
                 waitForResponse(game);
@@ -791,7 +791,7 @@ public class HumanPlayer extends PlayerImpl {
         }
         game.firePlayManaEvent(playerId, "Pay " + promptText, options);
         waitForResponse(game);
-        if (!this.canRespond()) {
+        if (!this.canRespond(game)) {
             return false;
         }
         if (response.getBoolean() != null) {
@@ -1139,7 +1139,7 @@ public class HumanPlayer extends PlayerImpl {
     public void assignDamage(int damage, List<UUID> targets, String singleTargetName, UUID sourceId, Game game) {
         updateGameStatePriority("assignDamage", game);
         int remainingDamage = damage;
-        while (remainingDamage > 0 && canRespond()) {
+        while (remainingDamage > 0 && canRespond(game)) {
             Target target = new TargetCreatureOrPlayer();
             target.setNotTarget(true);
             if (singleTargetName != null) {
@@ -1252,7 +1252,7 @@ public class HumanPlayer extends PlayerImpl {
         game.fireGetChoiceEvent(playerId, name, object, new ArrayList<>(abilities.values()));
         
         waitForResponse(game);
-        if (response.getUUID() != null && isInGame()) {
+        if (response.getUUID() != null && isInGame(game)) {
             if (abilities.containsKey(response.getUUID())) {
                 activateAbility(abilities.get(response.getUUID()), game);
             }
@@ -1344,7 +1344,7 @@ public class HumanPlayer extends PlayerImpl {
                     if (!source.getAbilityType().equals(AbilityType.TRIGGERED)) {
                         done = true;
                     }
-                    if (!canRespond()) {
+                    if (!canRespond(game)) {
                         return null;
                     }
                 }

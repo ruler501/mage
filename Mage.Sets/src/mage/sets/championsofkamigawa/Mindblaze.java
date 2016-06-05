@@ -106,13 +106,13 @@ class MindblazeEffect extends OneShotEffect {
             numberChoice.setChoices(numbers);
 
             while (!playerControls.choose(Outcome.Neutral, cardChoice, game)) {
-                if (!playerControls.canRespond()) {
+                if (!playerControls.canRespond(game)) {
                     return false;
                 }
             }
 
             while (!playerControls.choose(Outcome.Neutral, numberChoice, game)) {
-                if (!playerControls.canRespond()) {
+                if (!playerControls.canRespond(game)) {
                     return false;
                 }
             }

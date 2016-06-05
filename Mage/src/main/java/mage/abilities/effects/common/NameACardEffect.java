@@ -97,7 +97,7 @@ public class NameACardEffect extends OneShotEffect {
             }
             cardChoice.clearChoice();
             while (!controller.choose(Outcome.Detriment, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

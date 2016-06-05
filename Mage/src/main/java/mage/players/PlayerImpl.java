@@ -213,6 +213,7 @@ public abstract class PlayerImpl implements Player, Serializable {
     protected Set<UUID> playersUnderYourControl = new HashSet<>();
 
     protected Set<UUID> usersAllowedToSeeHandCards = new HashSet<>();
+    protected Set<UUID> teammates = new HashSet<>();
 
     protected List<UUID> attachments = new ArrayList<>();
 
@@ -309,6 +310,7 @@ public abstract class PlayerImpl implements Player, Serializable {
         this.playersUnderYourControl.clear();
         this.playersUnderYourControl.addAll(player.playersUnderYourControl);
         this.usersAllowedToSeeHandCards.addAll(player.usersAllowedToSeeHandCards);
+        this.teammates.addAll(player.teammates);
 
         this.isTestMode = player.isTestMode;
         this.isGameUnderControl = player.isGameUnderControl;
@@ -395,6 +397,7 @@ public abstract class PlayerImpl implements Player, Serializable {
         this.castSourceIdWithAlternateMana = player.getCastSourceIdWithAlternateMana();
         this.castSourceIdManaCosts = player.getCastSourceIdManaCosts();
         this.castSourceIdCosts = player.getCastSourceIdCosts();
+        this.teammates.addAll(player.getTeammates());
 
         // Don't restore!
         // this.storedBookmark
@@ -561,7 +564,7 @@ public abstract class PlayerImpl implements Player, Serializable {
         if (!playerId.equals(this.getId())) {
             this.playersUnderYourControl.add(playerId);
             Player player = game.getPlayer(playerId);
-            if (!player.hasLeft() && !player.hasLost()) {
+            if (!player.hasLeft() && !player.hasLost(game)) {
                 player.setGameUnderYourControl(false);
                 player.setTurnControlledBy(this.getId());
             }
@@ -613,7 +616,7 @@ public abstract class PlayerImpl implements Player, Serializable {
 
     @Override
     public boolean canBeTargetedBy(MageObject source, UUID sourceControllerId, Game game) {
-        if (this.hasLost() || this.hasLeft()) {
+        if (this.hasLost(game) || this.hasLeft()) {
             return false;
         }
         if (source != null) {
@@ -867,7 +870,7 @@ public abstract class PlayerImpl implements Player, Serializable {
             } else {
                 TargetCard target = new TargetCard(Zone.ALL, new FilterCard("card to put on the bottom of your library (last one chosen will be bottommost)"));
                 target.setRequired(true);
-                while (isInGame() && cards.size() > 1) {
+                while (isInGame(game) && cards.size() > 1) {
                     this.choose(Outcome.Neutral, cards, target, game);
                     UUID targetObjectId = target.getFirstTarget();
                     cards.remove(targetObjectId);
@@ -903,7 +906,7 @@ public abstract class PlayerImpl implements Player, Serializable {
             } else {
                 TargetCard target = new TargetCard(Zone.LIBRARY, new FilterCard("card to put on the top of your library (last one chosen will be topmost)"));
                 target.setRequired(true);
-                while (isInGame() && cards.size() > 1) {
+                while (isInGame(game) && cards.size() > 1) {
                     this.choose(Outcome.Neutral, cards, target, game);
                     UUID targetObjectId = target.getFirstTarget();
                     cards.remove(targetObjectId);
@@ -1518,7 +1521,7 @@ public abstract class PlayerImpl implements Player, Serializable {
                             filter.add(Predicates.not(new PermanentIdPredicate(permanent.getId())));
                         }
                         // while targets left and there is still allowed to untap
-                        while (canRespond() && leftForUntap.size() > 0 && numberToUntap > 0) {
+                        while (canRespond(game) && leftForUntap.size() > 0 && numberToUntap > 0) {
                             // player has to select the permanent he wants to untap for this restriction
                             Ability ability = handledEntry.getKey().getValue().iterator().next();
                             if (ability != null) {
@@ -1568,7 +1571,7 @@ public abstract class PlayerImpl implements Player, Serializable {
                     }
                 }
 
-            } while (canRespond() && playerCanceledSelection);
+            } while (canRespond(game) && playerCanceledSelection);
 
             if (!game.isSimulation()) {
                 // show in log which permanents were selected to untap
@@ -1719,11 +1722,15 @@ public abstract class PlayerImpl implements Player, Serializable {
     public void setCanLoseLife(boolean canLoseLife) {
         this.canLoseLife = canLoseLife;
     }
-
+    
     @Override
     public int loseLife(int amount, Game game) {
-        if (!canLoseLife) {
-            return 0;
+        boolean canLoseLifeTeam = canLoseLife;
+        for(UUID playerId : teammates){
+            Player player = game.getPlayer(playerId);
+            if(player != null) {
+                canLoseLifeTeam &= player.isCanLoseLife();
+            }
         }
         GameEvent event = new GameEvent(GameEvent.EventType.LOSE_LIFE, playerId, playerId, playerId, amount, false);
         if (!game.replaceEvent(event)) {
@@ -1731,10 +1738,22 @@ public abstract class PlayerImpl implements Player, Serializable {
             if (!game.isSimulation()) {
                 game.informPlayers(this.getLogName() + " loses " + event.getAmount() + " life");
             }
-            game.fireEvent(GameEvent.getEvent(GameEvent.EventType.LOST_LIFE, playerId, playerId, playerId, amount));
-            return amount;
+            game.fireEvent(GameEvent.getEvent(GameEvent.EventType.LOST_LIFE, playerId, playerId, playerId, event.getAmount()));
+            for(UUID playerId : teammates){
+                Player player = game.getPlayer(playerId);
+                if(player != null) {
+                    player.loseLifeNT(event.getAmount());
+                }
+            }
+            return event.getAmount();
         }
         return 0;
+    }
+
+    @Override
+    public int loseLifeNT(int amount) {
+        this.life -= amount;
+        return amount;
     }
 
     @Override
@@ -1749,7 +1768,14 @@ public abstract class PlayerImpl implements Player, Serializable {
 
     @Override
     public int gainLife(int amount, Game game) {
-        if (!canGainLife || amount == 0) {
+        boolean canGainLifeTeam = canGainLife;
+        for(UUID playerId : teammates){
+            Player player = game.getPlayer(playerId);
+            if(player != null) {
+                canGainLifeTeam &= player.isCanGainLife();
+            }
+        }
+        if (!canGainLifeTeam || amount == 0) {
             return 0;
         }
         GameEvent event = new GameEvent(GameEvent.EventType.GAIN_LIFE, playerId, playerId, playerId, amount, false);
@@ -1759,9 +1785,21 @@ public abstract class PlayerImpl implements Player, Serializable {
                 game.informPlayers(this.getLogName() + " gains " + event.getAmount() + " life");
             }
             game.fireEvent(GameEvent.getEvent(GameEvent.EventType.GAINED_LIFE, playerId, playerId, playerId, event.getAmount()));
+            for(UUID playerId : teammates){
+                Player player = game.getPlayer(playerId);
+                if(player != null) {
+                    player.gainLifeNT(event.getAmount());
+                }
+            }
             return event.getAmount();
         }
         return 0;
+    }
+    
+    @Override
+    public int gainLifeNT(int amount) {
+        this.life += amount;
+        return amount;
     }
 
     @Override
@@ -2129,7 +2167,7 @@ public abstract class PlayerImpl implements Player, Serializable {
         for (UUID opponentId : game.getOpponents(playerId)) {
             Player opponent = game.getPlayer(opponentId);
 
-            if (opponent != null && opponent.isInGame()) {
+            if (opponent != null && opponent.isInGame(game)) {
                 opponentInGame = true;
                 break;
             }
@@ -2143,7 +2181,7 @@ public abstract class PlayerImpl implements Player, Serializable {
                 // all opponents in range loose the game
                 for (UUID opponentId : game.getOpponents(playerId)) {
                     Player opponent = game.getPlayer(opponentId);
-                    if (opponent != null && !opponent.hasLost()) {
+                    if (opponent != null && !opponent.hasLost(game)) {
                         logger.debug("player won -> calling opponent lost: " + this.getName() + "  opponent: " + opponent.getName());
                         opponent.lost(game);
                     }
@@ -2152,11 +2190,11 @@ public abstract class PlayerImpl implements Player, Serializable {
                 int opponentsAlive = 0;
                 for (UUID opponentId : game.getOpponents(playerId)) {
                     Player opponent = game.getPlayer(opponentId);
-                    if (opponent != null && !opponent.hasLost()) {
+                    if (opponent != null && !opponent.hasLost(game)) {
                         opponentsAlive++;
                     }
                 }
-                if (opponentsAlive == 0 && !hasWon()) {
+                if (opponentsAlive == 0 && !hasWonNT()) {
                     logger.debug("player won -> No more opponents alive game won: " + this.getName());
                     game.informPlayers(this.getLogName() + " has won the game");
                     this.wins = true;
@@ -2169,27 +2207,58 @@ public abstract class PlayerImpl implements Player, Serializable {
     }
 
     @Override
-    public boolean hasLost() {
+    public boolean hasLost(Game game) {
+        boolean lost = hasLostNT();
+        for(UUID playerId : this.teammates){
+            lost |= game.getPlayer(playerId).hasLostNT();
+        }
+        if(lost){
+            for(UUID playerId : this.teammates){
+                game.getPlayer(playerId).lostForced(game);
+            }
+            this.loses = lost;
+        }
+        return this.loses;
+    }
+    
+    @Override
+    public boolean hasLostNT(){
         return this.loses;
     }
 
     @Override
-    public boolean isInGame() {
-        return !hasQuit() && !hasLost() && !hasWon() && !hasLeft();
+    public boolean isInGame(Game game) {
+        return !hasQuit() && !hasLost(game) && !hasWon(game) && !hasLeft();
     }
 
     @Override
-    public boolean canRespond() { // abort is checked here to get out of player requests
-        return !hasQuit() && !hasLost() && !hasWon() && !hasLeft() && !abort;
+    public boolean canRespond(Game game) { // abort is checked here to get out of player requests
+        return !hasQuit() && !hasLost(game) && !hasWon(game) && !hasLeft() && !abort;
     }
 
     @Override
-    public boolean hasWon() {
-        if (!this.loses) {
+    public boolean hasWon(Game game) {
+        if(!hasLost(game)){
+            boolean wonGame = hasWonNT();
+            for(UUID playerId : this.teammates){
+                wonGame |= game.getPlayer(playerId).hasWonNT();
+            }
+            if(wonGame){
+                for(UUID playerId : this.teammates){
+                    game.getPlayer(playerId).won(game);
+                }
+                won(game);
+            }
             return this.wins;
-        } else {
+        }
+        else{
             return false;
         }
+    }
+    
+    @Override
+    public boolean hasWonNT() {
+        return this.wins;
     }
 
     @Override
@@ -3336,7 +3405,7 @@ public abstract class PlayerImpl implements Player, Serializable {
                 if (chooseOrder) {
                     TargetCard target = new TargetCard(fromZone, new FilterCard("card to put on the top of your graveyard (last one chosen will be topmost)"));
                     target.setRequired(true);
-                    while (choosingPlayer.canRespond() && cards.size() > 1) {
+                    while (choosingPlayer.canRespond(game) && cards.size() > 1) {
                         choosingPlayer.chooseTarget(Outcome.Neutral, cards, target, source, game);
                         UUID targetObjectId = target.getFirstTarget();
                         Card card = cards.get(targetObjectId, game);
@@ -3515,6 +3584,26 @@ public abstract class PlayerImpl implements Player, Serializable {
     @Override
     public Set<UUID> getUsersAllowedToSeeHandCards() {
         return usersAllowedToSeeHandCards;
+    }
+    
+    @Override
+    public void addTeammate(UUID playerId) {
+        teammates.add(playerId);
+    }
+    
+    @Override
+    public void removeTeammate(UUID playerId) {
+        teammates.remove(playerId);
+    }
+    
+    @Override
+    public boolean isTeammate(UUID playerId) {
+        return teammates.contains(playerId);
+    }
+    
+    @Override
+    public Set<UUID> getTeammates() {
+        return teammates;
     }
 
     @Override

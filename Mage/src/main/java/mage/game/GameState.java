@@ -589,7 +589,8 @@ public class GameState implements Serializable, Copyable<GameState> {
     public PlayerList getPlayerList(UUID playerId) {
         PlayerList newPlayerList = new PlayerList();
         for (Player player : players.values()) {
-            if (!player.hasLeft() && !player.hasLost()) {
+            //TODO Might be broken
+            if (!player.hasLeft() && !player.hasLostNT()) {
                 newPlayerList.add(player.getId());
             }
         }
@@ -611,7 +612,7 @@ public class GameState implements Serializable, Copyable<GameState> {
         Player currentPlayer = game.getPlayer(playerId);
         if (currentPlayer != null) {
             for (Player player : players.values()) {
-                if (!player.hasLeft() && !player.hasLost() && currentPlayer.getInRange().contains(player.getId())) {
+                if (!player.hasLeft() && !player.hasLost(game) && currentPlayer.getInRange().contains(player.getId())) {
                     newPlayerList.add(player.getId());
                 }
             }

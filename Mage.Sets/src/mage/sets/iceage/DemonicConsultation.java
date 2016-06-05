@@ -94,7 +94,7 @@ class DemonicConsultationEffect extends OneShotEffect {
             Choice choice = new ChoiceImpl();
             choice.setChoices(CardRepository.instance.getNames());
             while (!controller.choose(Outcome.Benefit, choice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

@@ -127,7 +127,7 @@ class PemminsAuraBoostEnchantedEffect extends OneShotEffect {
             choice.getChoices().add(CHOICE_1);
             choice.getChoices().add(CHOICE_2);
             while (!choice.isChosen()) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
                 controller.choose(outcome, choice, game);

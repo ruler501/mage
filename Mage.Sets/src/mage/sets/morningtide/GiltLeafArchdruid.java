@@ -112,7 +112,7 @@ class GainControlAllLandsEffect extends ContinuousEffectImpl {
     @Override
     public boolean apply(Game game, Ability source) {
         Player targetPlayer = game.getPlayer(targetPointer.getFirst(game, source));
-        if (targetPlayer != null && targetPlayer.isInGame()) {
+        if (targetPlayer != null && targetPlayer.isInGame(game)) {
             for (Permanent permanent : game.getBattlefield().getAllActivePermanents(new FilterLandPermanent(), targetPointer.getFirst(game, source), game)) {
                 if (permanent != null) {
                     permanent.changeControllerId(source.getControllerId(), game);

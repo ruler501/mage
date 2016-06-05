@@ -222,7 +222,7 @@ public class MCTSNode {
         int retVal = -1;  //anything other than a win is a loss
         for (Player simPlayer: sim.getPlayers().values()) {
 //            logger.info(simPlayer.getName() + " calculated " + ((SimulatedPlayerMCTS)simPlayer).getActionCount() + " actions in " + duration/1000000000.0 + "s");
-            if (simPlayer.getId().equals(playerId) && simPlayer.hasWon()) {
+            if (simPlayer.getId().equals(playerId) && simPlayer.hasWon(sim)) {
 //                logger.info("AI won the simulation");
                 retVal = 1;
             }
@@ -372,7 +372,7 @@ public class MCTSNode {
     public boolean isWinner(UUID playerId) {
         if (game != null) {
             Player player = game.getPlayer(playerId);
-            if (player != null && player.hasWon())
+            if (player != null && player.hasWon(game))
                 return true;
         }
         return false;

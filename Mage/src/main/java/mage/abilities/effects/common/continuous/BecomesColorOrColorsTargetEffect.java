@@ -78,7 +78,7 @@ public class BecomesColorOrColorsTargetEffect extends OneShotEffect {
                 }
                 ChoiceColor choiceColor = new ChoiceColor();
                 controller.choose(Outcome.Benefit, choiceColor, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
                 if (!game.isSimulation()) {

@@ -77,7 +77,7 @@ public class ChooseModeEffect extends OneShotEffect {
             choice.setMessage(choiceMessage);
             choice.getChoices().addAll(modes);
             while (!choice.isChosen()) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
                 controller.choose(Outcome.Neutral, choice, game);

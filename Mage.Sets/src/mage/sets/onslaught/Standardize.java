@@ -94,7 +94,7 @@ class StandardizeEffect extends OneShotEffect {
             types.remove("Wall");
             typeChoice.setChoices(types);
             while (!player.choose(Outcome.BoostCreature, typeChoice, game)) {
-                if (!player.canRespond()) {
+                if (!player.canRespond(game)) {
                     return false;
                 }
             }

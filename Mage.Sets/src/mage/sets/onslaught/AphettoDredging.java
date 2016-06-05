@@ -70,7 +70,7 @@ public class AphettoDredging extends CardImpl {
                 typeChoice.setMessage("Choose a creature type");
                 typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
                 while (!controller.choose(Outcome.PutCreatureInPlay, typeChoice, game)) {
-                    if (!controller.canRespond()) {
+                    if (!controller.canRespond(game)) {
                         return;
                     }
                 }

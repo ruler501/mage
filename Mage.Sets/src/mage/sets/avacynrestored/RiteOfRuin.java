@@ -100,7 +100,7 @@ class RiteOfRuinEffect extends OneShotEffect {
         LinkedList<CardType> order = new LinkedList<>();
         ChoiceImpl choice = new ChoiceImpl(true);
         choice.setChoices(choices);
-        while (controller.canRespond() && controller.choose(Outcome.Sacrifice, choice, game) && choices.size() > 1) {
+        while (controller.canRespond(game) && controller.choose(Outcome.Sacrifice, choice, game) && choices.size() > 1) {
             order.add(getCardType(choice.getChoice()));
             choices.remove(choice.getChoice());
             choice.clearChoice();

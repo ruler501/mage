@@ -101,7 +101,7 @@ class CabalTherapyEffect extends OneShotEffect {
             cardChoice.clearChoice();
 
             while (!controller.choose(Outcome.Discard, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

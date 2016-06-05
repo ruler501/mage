@@ -101,7 +101,7 @@ class ElvishSoultillerEffect extends OneShotEffect {
             typeChoice.setMessage("Choose creature type");
             typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
             while (!controller.choose(outcome, typeChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

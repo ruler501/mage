@@ -113,8 +113,12 @@ public interface Player extends MageItem, Copyable<Player> {
     void setLife(int life, Game game);
 
     int loseLife(int amount, Game game);
+    
+    int loseLifeNT(int amount);
 
     int gainLife(int amount, Game game);
+    
+    int gainLifeNT(int amount);
 
     int damage(int damage, UUID sourceId, Game game, boolean combatDamage, boolean preventable);
 
@@ -204,9 +208,13 @@ public interface Player extends MageItem, Copyable<Player> {
 
     void setJustActivatedType(AbilityType abilityType);
 
-    boolean hasLost();
+    boolean hasLost(Game game);
+    
+    boolean hasLostNT();
 
-    boolean hasWon();
+    boolean hasWon(Game game);
+    
+    boolean hasWonNT();
 
     boolean hasQuit();
 
@@ -227,7 +235,7 @@ public interface Player extends MageItem, Copyable<Player> {
      *
      * @return
      */
-    boolean isInGame();
+    boolean isInGame(Game game);
 
     /**
      * Player is still active in game (has not left, lost or won the game) and
@@ -235,7 +243,7 @@ public interface Player extends MageItem, Copyable<Player> {
      *
      * @return
      */
-    boolean canRespond();
+    boolean canRespond(Game game);
 
     /**
      * Called if other player left the game
@@ -814,6 +822,14 @@ public interface Player extends MageItem, Copyable<Player> {
     boolean isRequestToShowHandCardsAllowed();
 
     Set<UUID> getUsersAllowedToSeeHandCards();
+    
+    void addTeammate(UUID playerId);
+    
+    boolean isTeammate(UUID playerId);
+    
+    void removeTeammate(UUID playerId);
+    
+    Set<UUID> getTeammates();
 
     boolean isInPayManaMode();
 

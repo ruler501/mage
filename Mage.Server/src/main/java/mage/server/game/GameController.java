@@ -596,7 +596,7 @@ public class GameController implements GameCallback {
         int requests = 0;
         for (Player player : game.getState().getPlayers().values()) {
             User requestedUser = getUserByPlayerId(player.getId());
-            if (player.isInGame() && player.isHuman()
+            if (player.isInGame(game) && player.isHuman()
                     && requestedUser != null
                     && !requestedUser.getId().equals(userIdRequester)) {
                 requests++;

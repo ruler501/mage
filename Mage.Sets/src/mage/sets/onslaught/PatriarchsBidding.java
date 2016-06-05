@@ -101,7 +101,7 @@ class PatriarchsBiddingEffect extends OneShotEffect {
                 typeChoice.setMessage("Choose a creature type");
                 typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
                 while (!player.choose(Outcome.PutCreatureInPlay, typeChoice, game)) {
-                    if (!player.canRespond()) {
+                    if (!player.canRespond(game)) {
                         break;
                     }
                 }

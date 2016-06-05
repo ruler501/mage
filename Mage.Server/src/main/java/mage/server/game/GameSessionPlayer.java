@@ -280,7 +280,7 @@ public class GameSessionPlayer extends GameSessionWatcher {
     public void quitGame() {
         if (game != null) {
             final Player player = game.getPlayer(playerId);
-            if (player != null && player.isInGame()) {
+            if (player != null && player.isInGame(game)) {
                 callExecutor.execute(
                         new Runnable() {
                     @Override

@@ -70,15 +70,15 @@ public class GameEndView implements Serializable {
             if (playerView.getPlayerId().equals(playerId)) {
                 clientPlayer = playerView;
                 you = player;
-                won = you.hasWon(); // needed to control image
+                won = you.hasWon(game); // needed to control image
             }
             players.add(playerView);
-            if (player.hasWon()) {
+            if (player.hasWon(game)) {
                 winner++;
             }
         }
         if (you != null) {
-            if (you.hasWon()) {
+            if (you.hasWon(game)) {
                 gameInfo = new StringBuilder("You won the game on turn ").append(game.getTurnNum()).append(".").toString();
             } else if (winner > 0) {
                 gameInfo = new StringBuilder("You lost the game on turn ").append(game.getTurnNum()).append(".").toString();

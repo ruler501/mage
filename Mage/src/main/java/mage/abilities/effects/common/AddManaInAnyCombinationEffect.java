@@ -95,7 +95,7 @@ public class AddManaInAnyCombinationEffect extends ManaEffect {
             Mana mana = new Mana();
             int amountOfManaLeft = amount.calculate(game, source, this);
 
-            while (amountOfManaLeft > 0 && player.canRespond()) {
+            while (amountOfManaLeft > 0 && player.canRespond(game)) {
                 for (ColoredManaSymbol coloredManaSymbol : manaSymbols) {
                     int number = player.getAmount(0, amountOfManaLeft, "How many " + coloredManaSymbol.getColorName() + " mana?", game);
                     if (number > 0) {

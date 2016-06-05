@@ -102,7 +102,7 @@ class SealOfTheGuildpactChooseColorEffect extends OneShotEffect {
             ChoiceColor choice1 = new ChoiceColor();
             while (!choice1.isChosen()) {
                 controller.choose(Outcome.Benefit, choice1, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }
@@ -127,7 +127,7 @@ class SealOfTheGuildpactChooseColorEffect extends OneShotEffect {
             choice2.setChoices(choices2);
             while (!choice2.isChosen()) {
                 controller.choose(Outcome.Benefit, choice2, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

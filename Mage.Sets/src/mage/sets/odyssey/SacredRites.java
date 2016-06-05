@@ -89,7 +89,7 @@ class SacredRitesEffect extends OneShotEffect {
         Player player = game.getPlayer(source.getControllerId());
         if (player != null) {
             Target target = new TargetCardInHand(0, Integer.MAX_VALUE, new FilterCard("cards to discard"));
-            while (player.canRespond() && !target.isChosen()) {
+            while (player.canRespond(game) && !target.isChosen()) {
                 target.choose(Outcome.BoostCreature, player.getId(), source.getSourceId(), game);
             }
             int numDiscarded = 0;

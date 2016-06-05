@@ -116,7 +116,7 @@ class HarmonicConvergenceEffect extends OneShotEffect {
             for (Permanent permanent : list) {
                 cards.add(permanent);
             }
-            while (player.canRespond() && cards.size() > 1) {
+            while (player.canRespond(game) && cards.size() > 1) {
                 player.choose(Outcome.Neutral, cards, target, game);
                 Permanent permanent = game.getPermanent(target.getFirstTarget());
                 if (permanent != null) {

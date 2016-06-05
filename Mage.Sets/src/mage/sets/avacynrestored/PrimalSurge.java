@@ -113,7 +113,7 @@ class PrimalSurgeEffect extends OneShotEffect {
                     }
                 }
             }
-        } while (player.canRespond() && repeat);
+        } while (player.canRespond(game) && repeat);
 
         return true;
     }

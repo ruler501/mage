@@ -115,7 +115,7 @@ class MirrorOfFateEffect extends OneShotEffect {
         }
 
         TargetCard target = new TargetCard(Zone.EXILED, new FilterCard("card to put on top of your library"));
-        while (player.canRespond() && cards.size() > 1) {
+        while (player.canRespond(game) && cards.size() > 1) {
             player.choose(Outcome.Neutral, cards, target, game);
             Card card = cards.get(target.getFirstTarget(), game);
             if (card != null) {

@@ -116,7 +116,7 @@ class GoblinClearCutterEffect extends OneShotEffect {
             for (int i = 0; i < 3; i++){
                 Mana mana = new Mana();
                 while (!player.choose(Outcome.Benefit, manaChoice, game)) {
-                    if (!player.canRespond()) {
+                    if (!player.canRespond(game)) {
                         return false;
                     }
                 }

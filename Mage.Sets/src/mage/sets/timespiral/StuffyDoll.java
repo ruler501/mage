@@ -136,7 +136,7 @@ class StuffyDollGainLifeEffect extends OneShotEffect {
     public boolean apply(Game game, Ability source) {
         UUID playerId = (UUID) game.getState().getValue(source.getSourceId() + "_player");
         Player player = game.getPlayer(playerId);
-        if (player != null && player.canRespond()) {
+        if (player != null && player.canRespond(game)) {
             player.damage((Integer) this.getValue("damageAmount"), source.getSourceId(), game, false, true);
         }
         return true;

@@ -1592,23 +1592,23 @@ public class TestPlayer implements Player {
     }
 
     @Override
-    public boolean hasLost() {
-        return computerPlayer.hasLost();
+    public boolean hasLost(Game game) {
+        return computerPlayer.hasLost(game);
     }
 
     @Override
-    public boolean isInGame() {
-        return computerPlayer.isInGame();
+    public boolean isInGame(Game game) {
+        return computerPlayer.isInGame(game);
     }
 
     @Override
-    public boolean canRespond() {
-        return computerPlayer.canRespond();
+    public boolean canRespond(Game game) {
+        return computerPlayer.canRespond(game);
     }
 
     @Override
-    public boolean hasWon() {
-        return computerPlayer.hasWon();
+    public boolean hasWon(Game game) {
+        return computerPlayer.hasWon(game);
     }
 
     @Override

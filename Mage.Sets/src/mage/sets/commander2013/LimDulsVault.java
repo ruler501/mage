@@ -112,7 +112,7 @@ class LimDulsVaultEffect extends OneShotEffect {
             }
             
             TargetCard target = new TargetCard(Zone.LIBRARY, new FilterCard(doAgain ? textBottom : textTop));
-            while (player.canRespond() && cards.size() > 1) {
+            while (player.canRespond(game) && cards.size() > 1) {
                 player.choose(Outcome.Neutral, cards, target, game);
                 Card card = cards.get(target.getFirstTarget(), game);
                 if (card != null) {

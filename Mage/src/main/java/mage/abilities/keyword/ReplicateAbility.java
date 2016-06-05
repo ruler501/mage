@@ -113,7 +113,7 @@ public class ReplicateAbility extends StaticAbility implements OptionalAdditiona
                 this.resetReplicate();
 
                 boolean again = true;
-                while (player.canRespond() && again) {
+                while (player.canRespond(game) && again) {
                     String times = "";
                     if (additionalCost.isRepeatable()) {
                         int numActivations = additionalCost.getActivateCount();

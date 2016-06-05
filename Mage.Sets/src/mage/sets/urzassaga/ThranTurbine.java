@@ -106,7 +106,7 @@ class ThranTurbineEffect extends OneShotEffect {
             numberChoice.setMessage("Choose the amount of {C} mana to add");
 
             while (!player.choose(Outcome.Benefit, numberChoice, game)) {
-                if (!player.canRespond()) {
+                if (!player.canRespond(game)) {
                     return false;
                 }
             }

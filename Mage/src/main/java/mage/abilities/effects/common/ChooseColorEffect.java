@@ -63,7 +63,7 @@ public class ChooseColorEffect extends OneShotEffect {
             ChoiceColor choice = new ChoiceColor();
             while (!choice.isChosen()) {
                 controller.choose(outcome, choice, game);
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

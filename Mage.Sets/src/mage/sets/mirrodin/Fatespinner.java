@@ -109,7 +109,7 @@ class FatespinnerChooseEffect extends OneShotEffect {
             choice.setMessage("Choose phase or step to skip");
             choice.setChoices(choices);
             while(!player.choose(outcome, choice, game)) {
-                if(player.canRespond()) {
+                if(player.canRespond(game)) {
                     return false;
                 }
             }

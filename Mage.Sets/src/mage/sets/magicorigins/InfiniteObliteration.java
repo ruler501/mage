@@ -90,7 +90,7 @@ class InfiniteObliterationEffect extends SearchTargetGraveyardHandLibraryForCard
             cardChoice.setMessage("Name a creature card");
 
             while (!controller.choose(Outcome.Exile, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

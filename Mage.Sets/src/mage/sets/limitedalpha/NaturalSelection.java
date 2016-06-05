@@ -106,7 +106,7 @@ class  NaturalSelectionEffect extends OneShotEffect {
         you.lookAtCards("Natural Selection", cards, game);
 
         TargetCard target = new TargetCard(Zone.LIBRARY, new FilterCard("card to put on the top of target player's library"));
-        while (player.canRespond() && cards.size() > 1) {
+        while (player.canRespond(game) && cards.size() > 1) {
             you.choose(Outcome.Neutral, cards, target, game);
             Card card = cards.get(target.getFirstTarget(), game);
             if (card != null) {

@@ -91,7 +91,7 @@ class TabletOfTheGuildsEntersBattlefieldEffect extends OneShotEffect {
             ChoiceColor colorChoice = new ChoiceColor();
             colorChoice.setMessage("Choose the first color");
             while (!player.choose(Outcome.GainLife, colorChoice, game)) {
-                if (!player.canRespond()) {
+                if (!player.canRespond(game)) {
                     return false;
                 }
             }
@@ -100,7 +100,7 @@ class TabletOfTheGuildsEntersBattlefieldEffect extends OneShotEffect {
 
             colorChoice.getChoices().remove(colorChoice.getChoice());
             colorChoice.setMessage("Choose the second color");
-            while (!player.choose(Outcome.GainLife, colorChoice, game) && player.canRespond()) {
+            while (!player.choose(Outcome.GainLife, colorChoice, game) && player.canRespond(game)) {
                 game.debugMessage("player canceled choosing type. retrying.");
             }
             game.getState().setValue(permanent.getId() + "_color2", colorChoice.getColor().toString());

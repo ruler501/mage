@@ -102,7 +102,7 @@ public class MistformSliver extends CardImpl {
                 typeChoice.setMessage("Choose creature type");
                 typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
                 while (!player.choose(Outcome.Detriment, typeChoice, game)) {
-                    if (!player.canRespond()) {
+                    if (!player.canRespond(game)) {
                         return false;
                     }
                 }

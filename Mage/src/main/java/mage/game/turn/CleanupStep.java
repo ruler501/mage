@@ -57,7 +57,7 @@ public class CleanupStep extends Step {
         Player activePlayer = game.getPlayer(activePlayerId);
         game.getState().setPriorityPlayerId(activePlayer.getId());
         //20091005 - 514.1
-        if (activePlayer.isInGame()) {
+        if (activePlayer.isInGame(game)) {
             activePlayer.discardToMax(game);            
         }
         //20100423 - 514.2

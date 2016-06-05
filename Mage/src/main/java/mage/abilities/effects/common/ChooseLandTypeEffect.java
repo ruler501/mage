@@ -44,7 +44,7 @@ public class ChooseLandTypeEffect extends OneShotEffect {
             typeChoice.setMessage("Choose land type");
             typeChoice.setChoices(CardRepository.instance.getLandTypes());
             while (!controller.choose(outcome, typeChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

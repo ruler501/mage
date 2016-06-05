@@ -103,7 +103,7 @@ class WoodSageEffect extends OneShotEffect {
             cardChoice.setChoices(CardRepository.instance.getCreatureNames());
             cardChoice.setMessage("Name a creature card");
             while (!controller.choose(Outcome.Detriment, cardChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

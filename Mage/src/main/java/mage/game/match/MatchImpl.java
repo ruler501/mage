@@ -150,13 +150,9 @@ public abstract class MatchImpl implements Match {
                 for(MatchPlayer teammate : team){
                     if(player != teammate){
                         player.getPlayer().addPermissionToShowHandCards(getPlayerUserId(teammate.getPlayer().getId()));
-                        System.out.println(player.getName());
-                        System.out.println(teammate.getName());
-                        System.out.println("----|||---");
+                        player.getPlayer().addTeammate(teammate.getPlayer().getId());
                     }
                 }
-                System.out.println(player.getPlayer().getUsersAllowedToSeeHandCards());
-                System.out.println("||||----||||");
             }
         }
     }
@@ -296,7 +292,7 @@ public abstract class MatchImpl implements Match {
                 if (player.hasQuit()) {
                     matchPlayer.setQuit(true);
                 }
-                if (player.hasWon()) {
+                if (player.hasWon(game)) {
                     matchPlayer.addWin();
                 }
             }
@@ -364,7 +360,7 @@ public abstract class MatchImpl implements Match {
         Game game = getGame();
         for (MatchPlayer player : this.players) {
             Player p = game.getPlayer(player.getPlayer().getId());
-            if (p != null && p.hasLost() && !p.hasQuit()) {
+            if (p != null && p.hasLost(game) && !p.hasQuit()) {
                 loserId = p.getId();
             }
         }

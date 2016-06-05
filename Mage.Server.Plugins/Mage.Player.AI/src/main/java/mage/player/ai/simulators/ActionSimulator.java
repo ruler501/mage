@@ -61,10 +61,10 @@ public class ActionSimulator {
     public int evaluateState() {
         Player opponent = game.getPlayer(game.getOpponents(player.getId()).iterator().next());
         if (game.gameOver(null)) {
-            if (player.hasLost() || opponent.hasWon()) {
+            if (player.hasLost(game) || opponent.hasWon(game)) {
                 return Integer.MIN_VALUE;
             }
-            if (opponent.hasLost() || player.hasWon()) {
+            if (opponent.hasLost(game) || player.hasWon(game)) {
                 return Integer.MAX_VALUE;
             }
         }

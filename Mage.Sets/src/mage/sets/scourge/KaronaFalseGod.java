@@ -148,7 +148,7 @@ class KaronaFalseGodEffect extends OneShotEffect {
             typeChoice.setMessage("Choose creature type");
             typeChoice.setChoices(CardRepository.instance.getCreatureTypes());
             while (!controller.choose(Outcome.BoostCreature, typeChoice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

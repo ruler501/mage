@@ -141,7 +141,9 @@ public abstract class GameTinyLeadersImpl extends GameImpl {
         Set<UUID> opponents = new HashSet<>();
         for (UUID opponentId : getState().getPlayersInRange(playerId, this)) {
             if (!opponentId.equals(playerId)) {
-                opponents.add(opponentId);
+                if(!this.getPlayer(playerId).isTeammate(opponentId)){
+                    opponents.add(opponentId);
+                }
             }
         }
         return opponents;
@@ -149,7 +151,7 @@ public abstract class GameTinyLeadersImpl extends GameImpl {
 
     @Override
     public boolean isOpponent(Player player, UUID playerToCheck) {
-        return !player.getId().equals(playerToCheck);
+        return !player.getId().equals(playerToCheck) && !player.isTeammate(playerToCheck);
     }
 
     public void setAlsoHand(boolean alsoHand) {

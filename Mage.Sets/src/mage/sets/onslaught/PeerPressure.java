@@ -97,7 +97,7 @@ class PeerPressureEffect extends OneShotEffect {
             choice.setMessage("Choose creature type");
             choice.setChoices(CardRepository.instance.getCreatureTypes());
             while (!controller.choose(Outcome.GainControl, choice, game)) {
-                if (!controller.canRespond()) {
+                if (!controller.canRespond(game)) {
                     return false;
                 }
             }

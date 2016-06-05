@@ -504,7 +504,7 @@ public class TableController {
                             Game game = match.getGame();
                             if (game != null && !game.hasEnded()) {
                                 Player player = match.getPlayer(playerId).getPlayer();
-                                if (player != null && player.isInGame()) {
+                                if (player != null && player.isInGame(match.getGame())) {
                                     GameManager.getInstance().quitMatch(game.getId(), userId);
                                 }
                                 match.quitMatch(playerId);
@@ -949,7 +949,7 @@ public class TableController {
                             || table.getState().equals(TableState.STARTING)
                             || table.getState().equals(TableState.READY_TO_START))
                             || !match.isDoneSideboarding()
-                            || (!matchPlayer.hasQuit() && match.getGame() != null && matchPlayer.getPlayer().isInGame())) {
+                            || (!matchPlayer.hasQuit() && match.getGame() != null && matchPlayer.getPlayer().isInGame(match.getGame()))) {
                         User user = UserManager.getInstance().getUser(userPlayerEntry.getKey());
                         if (user == null) {
                             logger.debug("- Active user of match is missing: " + matchPlayer.getName());

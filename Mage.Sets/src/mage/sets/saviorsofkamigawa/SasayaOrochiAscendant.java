@@ -192,7 +192,7 @@ class SasayasEssenceManaEffectEffect extends ManaEffect {
                         } else {
                             while (!choice.isChosen()) {
                                 controller.choose(outcome, choice, game);
-                                if (!controller.canRespond()) {
+                                if (!controller.canRespond(game)) {
                                     return false;
                                 }
                             }

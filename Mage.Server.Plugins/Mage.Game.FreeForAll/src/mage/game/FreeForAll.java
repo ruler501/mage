@@ -72,7 +72,9 @@ public class FreeForAll extends GameImpl {
         Set<UUID> opponents = new HashSet<>();
         for (UUID opponentId: this.getPlayer(playerId).getInRange()) {
             if (!opponentId.equals(playerId)) {
-                opponents.add(opponentId);
+                if(!this.getPlayer(playerId).isTeammate(opponentId)){
+                    opponents.add(opponentId);
+                }
             }
         }
         return opponents;
@@ -80,7 +82,7 @@ public class FreeForAll extends GameImpl {
 
     @Override
     public boolean isOpponent(Player player, UUID playerToCheck) {
-       return !player.getId().equals(playerToCheck) && player.getInRange().contains(playerToCheck);
+       return !player.getId().equals(playerToCheck) && player.getInRange().contains(playerToCheck) && !player.isTeammate(playerToCheck);
     }
     
     @Override

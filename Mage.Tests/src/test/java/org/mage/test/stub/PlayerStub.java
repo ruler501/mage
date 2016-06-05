@@ -374,12 +374,12 @@ public class PlayerStub implements Player {
     }
 
     @Override
-    public boolean hasLost() {
+    public boolean hasLost(Game game) {
         return false;
     }
 
     @Override
-    public boolean hasWon() {
+    public boolean hasWon(Game game) {
         return false;
     }
 
@@ -419,12 +419,12 @@ public class PlayerStub implements Player {
     }
 
     @Override
-    public boolean isInGame() {
+    public boolean isInGame(Game game) {
         return false;
     }
 
     @Override
-    public boolean canRespond() {
+    public boolean canRespond(Game game) {
         return false;
     }
 

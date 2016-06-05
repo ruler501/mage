@@ -95,7 +95,7 @@ class FaithsShieldEffect extends OneShotEffect {
                 ChoiceColor choice = new ChoiceColor();
                 while (!choice.isChosen()) {
                     controller.choose(Outcome.Protect, choice, game);
-                    if (!controller.canRespond()) {
+                    if (!controller.canRespond(game)) {
                         return false;
                     }
                 }

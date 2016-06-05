@@ -34,10 +34,10 @@ public class GameStateEvaluator2 {
         Player player = game.getPlayer(playerId);
         Player opponent = game.getPlayer(game.getOpponents(playerId).iterator().next());
         if (game.gameOver(null)) {
-            if (player.hasLost() || opponent.hasWon()) {
+            if (player.hasLost(game) || opponent.hasWon(game)) {
                 return LOSE_GAME_SCORE;
             }
-            if (opponent.hasLost() || player.hasWon()) {
+            if (opponent.hasLost(game) || player.hasWon(game)) {
                 return WIN_GAME_SCORE;
             }
         }

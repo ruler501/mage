@@ -114,7 +114,7 @@ class DwarvenArmorerEffect extends OneShotEffect {
             choice.setMessage("Choose type of counter to add");
             choice.setChoices(choices);
             while(!controller.choose(outcome, choice, game)) {
-                if(controller.canRespond()) {
+                if(controller.canRespond(game)) {
                     return false;
                 }
             }
