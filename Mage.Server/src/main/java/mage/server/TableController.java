@@ -547,7 +547,7 @@ public class TableController {
                     logger.info("MATCH started [" + match.getName() + "] " + match.getId() + "(" + user.getName() + ")");
                     logger.debug("- " + match.getOptions().getGameType() + " - " + match.getOptions().getDeckType());
                 }
-                match.startMatch();
+                match.startMatch(userPlayerMap);
                 startGame(null);
             } catch (GameException ex) {
                 logger.fatal("Error starting match ", ex);

@@ -38,6 +38,7 @@ import mage.players.Player;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import mage.game.GameInfo;
 import mage.game.result.ResultProtos.MatchProto;
 
@@ -56,13 +57,15 @@ public interface Match {
     boolean checkIfMatchEnds();
     List<MatchPlayer> getPlayers();
     MatchPlayer getPlayer(UUID playerId);
+    List<List<MatchPlayer>> getTeams();
+    List<MatchPlayer> getTeam(int index);
 
     void addPlayer(Player player, Deck deck);
     boolean quitMatch(UUID playerId);
 
     void submitDeck(UUID playerId, Deck deck);
     void updateDeck(UUID playerId, Deck deck);
-    void startMatch() throws GameException;
+    void startMatch(ConcurrentHashMap<UUID, UUID> userPlayerMap) throws GameException;
     void startGame() throws GameException;
     void sideboard();
     void endGame();

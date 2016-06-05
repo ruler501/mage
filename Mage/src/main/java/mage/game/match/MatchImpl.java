@@ -31,8 +31,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import mage.cards.decks.Deck;
 import mage.game.Game;
 import mage.game.GameException;
@@ -57,6 +59,7 @@ public abstract class MatchImpl implements Match {
 
     protected UUID id = UUID.randomUUID();
     protected List<MatchPlayer> players = new ArrayList<>();
+    protected List<List<MatchPlayer>> teams;
     protected List<Game> games = new ArrayList<>();
     protected List<GameInfo> gamesInfo = new ArrayList<>();
     protected UUID tableId;
@@ -72,8 +75,13 @@ public abstract class MatchImpl implements Match {
     protected int startedGames;
 
     protected boolean replayAvailable;
+    
+    protected ConcurrentHashMap<UUID, UUID> userPlayerMap = null;
 
     public MatchImpl(MatchOptions options) {
+        this.teams = new ArrayList<>(2);
+        this.teams.add(new ArrayList<MatchPlayer>());
+        this.teams.add(new ArrayList<MatchPlayer>());
         this.options = options;
         this.startTime = new Date(); // to avaoid null pointer exceptions
         replayAvailable = false;
@@ -93,6 +101,16 @@ public abstract class MatchImpl implements Match {
             }
         }
         return null;
+    }
+    
+    @Override
+    public List<List<MatchPlayer>> getTeams(){
+        return teams;
+    }
+    
+    @Override
+    public List<MatchPlayer> getTeam(int index){
+        return teams.get(index);
     }
 
     @Override
@@ -120,8 +138,27 @@ public abstract class MatchImpl implements Match {
     }
 
     @Override
-    public void startMatch() throws GameException {
+    public void startMatch(ConcurrentHashMap<UUID, UUID> userPlayerMap) throws GameException {
         this.startTime = new Date();
+        this.userPlayerMap = userPlayerMap;
+        int index=0;
+        for(MatchPlayer player : players){
+            teams.get(index++ % teams.size()).add(player);
+        }
+        for(List<MatchPlayer> team : teams){
+            for(MatchPlayer player : team){
+                for(MatchPlayer teammate : team){
+                    if(player != teammate){
+                        player.getPlayer().addPermissionToShowHandCards(getPlayerUserId(teammate.getPlayer().getId()));
+                        System.out.println(player.getName());
+                        System.out.println(teammate.getName());
+                        System.out.println("----|||---");
+                    }
+                }
+                System.out.println(player.getPlayer().getUsersAllowedToSeeHandCards());
+                System.out.println("||||----||||");
+            }
+        }
     }
 
     @Override
@@ -515,4 +552,14 @@ public abstract class MatchImpl implements Match {
         return builder.build();
     }
 
+    private UUID getPlayerUserId(UUID playerId) {
+        if(userPlayerMap == null) return null;
+        for (Map.Entry<UUID, UUID> entry : userPlayerMap.entrySet()) {
+            if (entry.getValue().equals(playerId)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+    
 }
