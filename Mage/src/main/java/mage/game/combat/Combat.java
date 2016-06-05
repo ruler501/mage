@@ -1282,13 +1282,20 @@ public class Combat implements Serializable, Copyable<Combat> {
     public Set<UUID> getPlayerDefenders(Game game) {
         Set<UUID> playerDefenders = new HashSet<>();
         for (CombatGroup group : groups) {
+            Player defender = null;
             if (group.defenderIsPlaneswalker) {
                 Permanent permanent = game.getPermanent(group.getDefenderId());
                 if (permanent != null) {
-                    playerDefenders.add(permanent.getControllerId());
+                    defender = game.getPlayer(permanent.getControllerId());
                 }
             } else {
-                playerDefenders.add(group.getDefenderId());
+                defender = game.getPlayer(group.getDefenderId());
+            }
+            if(defender != null){
+                for(UUID playerId : defender.getTeammates()){
+                    playerDefenders.add(playerId);
+                }
+                playerDefenders.add(defender.getId());
             }
         }
         return playerDefenders;

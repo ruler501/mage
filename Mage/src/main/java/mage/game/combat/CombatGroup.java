@@ -401,8 +401,10 @@ public class CombatGroup implements Serializable, Copyable<CombatGroup> {
     }
 
     public boolean canBlock(Permanent blocker, Game game) {
-        // player can't block if another player is attacked
-        if (!defendingPlayerId.equals(blocker.getControllerId())) {
+        // player can't block if another team is attacked
+        Player blockerController = game.getPlayer(blocker.getControllerId());
+        if (!defendingPlayerId.equals(blocker.getControllerId()) 
+                && !blockerController.getTeammates().contains(defendingPlayerId)) {
             return false;
         }
         for (UUID attackerId : attackers) {
