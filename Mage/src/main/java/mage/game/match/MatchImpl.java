@@ -199,6 +199,8 @@ public abstract class MatchImpl implements Match {
     public boolean checkIfMatchEnds() {
         int activePlayers = 0;
         MatchPlayer matchWinner = null;
+        boolean matchOver = false;
+        int[] winCount = new int[teams.size()];
         for (MatchPlayer matchPlayer : players) {
             if (!matchPlayer.hasQuit()) {
                 activePlayers++;
@@ -210,7 +212,7 @@ public abstract class MatchImpl implements Match {
                 return true;
             }
         }
-        if (activePlayers < 2) {
+        if (activePlayers <= teams.get(0).size()) {
             if (matchWinner != null) {
                 matchWinner.setMatchWinner(true);
             }

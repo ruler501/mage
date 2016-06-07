@@ -49,6 +49,7 @@ public class CommanderFreeForAllMatch extends MatchImpl {
             startLife = 30;
             alsoHand = true;  // commander going to hand allowed to go to command zone effective July 17, 2015
         }
+        startLife = teams.get(0).size() == 0 ? startLife : startLife*teams.get(0).size()*3/4;
         CommanderFreeForAll game = new CommanderFreeForAll(options.getAttackOption(), options.getRange(), options.getFreeMulligans(), startLife);
         game.setStartMessage(this.createGameStartMessage());
         game.setAlsoHand(alsoHand);
